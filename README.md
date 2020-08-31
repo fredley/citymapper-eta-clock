@@ -16,26 +16,26 @@ The Arduino WiFi connection can be re/configured via BLE to save having to repro
 
 To set up the 'server-side' component on AWS (you could of course host it yourself elsewhere if suitable, but this setup costs <$1/mo, or free during first year):
 
-    Create a Lambda function with a python 3 runtime
-    Create a Bucket to store the data, and enable static website hosting
-    Create a Cloudwatch event rule to trigger the lambda every minute (disabled to begin with!)
-    Make sure the lambda has permissions to write to the bucket
-    Create an API Gateway endpoint that backs onto the lambda
-    Update the Arduino project with the S3 URL to get its angle
-    Use [HTTP Request Shortcuts](https://play.google.com/store/apps/details?id=ch.rmy.android.http_shortcuts) on Android (or an equivalent on iOS?) to set up a Share menu option that calls the API Gateway webhook
+* Create a Lambda function with a python 3 runtime
+* Create a Bucket to store the data, and enable static website hosting
+* Create a Cloudwatch event rule to trigger the lambda every minute (disabled to begin with!)
+* Make sure the lambda has permissions to write to the bucket
+* Create an API Gateway endpoint that backs onto the lambda
+* Update the Arduino project with the S3 URL to get its angle
+* Use [HTTP Request Shortcuts](https://play.google.com/store/apps/details?id=ch.rmy.android.http_shortcuts) on Android (or workflow.is on iOS - untested) to set up a Share menu option that calls the API Gateway webhook
 
 The Arduino project requires the following:
 
-    An Arduino Nano 333 IOT
-    A 28BYJ-48 Stepper moter and ULN2003 driver board
-    A push to break switch (to reset the stepper) + pulldown resisitor
-    An LED
+* An Arduino Nano 333 IOT
+* A 28BYJ-48 Stepper moter and ULN2003 driver board
+* A push to break switch (to reset the stepper) + pulldown resisitor
+* An LED
 
 The Arduino operates as follows:
 
-    At boot, it tries to connect to Wifi with stored credentials. If this fails, it enables BLE and the LED starts blinking
-    When successfully connected, the LED goes solid, and the SSID and password can be set via the two available characteristics, using a BLE debug app (e.g. nRF Connect for Android)
-    Once disconnected, the LED goes out, and the WiFi connection is attempted again
-    Once successfully connected, the credentials are stored in Flash memory
-    Every minute, the board connects to the given URL to fetch the number of steps to turn, and updates accordingly
-    In order to reset the stepper position (since it has no 'memory', and the Flash memory on the board is unsuitable for many writes), hold the button down until the dial points to zero, then release, the clock will then adjust to the correct offset.
+* At boot, it tries to connect to Wifi with stored credentials. If this fails, it enables BLE and the LED starts blinking
+* When successfully connected, the LED goes solid, and the SSID and password can be set via the two available characteristics, using a BLE debug app (e.g. nRF Connect for Android)
+* Once disconnected, the LED goes out, and the WiFi connection is attempted again
+* Once successfully connected, the credentials are stored in Flash memory
+* Every minute, the board connects to the given URL to fetch the number of steps to turn, and updates accordingly
+* In order to reset the stepper position (since it has no 'memory', and the Flash memory on the board is unsuitable for many writes), hold the button down until the dial points to zero, then release, the clock will then adjust to the correct offset.
