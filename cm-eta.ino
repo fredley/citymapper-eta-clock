@@ -158,7 +158,7 @@ void updateAngle() {
     stepper.step(prevStepperPos - stepsPerRevolution);
   } else {
     Serial.println("Stepping forward");
-    stepper.step(prevStepperPos - stepperPos);
+    stepper.step(stepperPos - prevStepperPos);
   }
   prevStepperPos = stepperPos;
 }
@@ -238,43 +238,59 @@ void connectWifi() {
   Serial.println("Wifi connection");
 
   WifiCredentials creds;
-  creds = flash_store.read();
+  creds = my_flash_store.read();
 
-  while ( wifiStatus != WL_CONNECTED && wifiStatus != WL_CONNECT_FAILED ) {
+  if (!triedDefaultCreds && !creds.valid) {
+    creds = defaultCreds();
+    triedDefaultCreds = true;
+  }
+
+  while ( status != WL_CONNECTED && status != WL_CONNECT_FAILED && status != WL_NO_SSID_AVAIL) {
     Serial.print("Attempting to connect to WPA SSID: ");
     Serial.print(creds.ssid);
     Serial.print(", pass (");
     Serial.print(creds.pass);
     Serial.println(")");
-
-    wifiStatus = WiFi.begin(creds.ssid, creds.pass);
+    // Connect to WPA/WPA2 network:
+    status = WiFi.begin(creds.ssid, creds.pass);
 
     // wait 5 seconds for connection:
+    Serial.println(status);
     delay(5000);
   }
 }
 
-char* string2char(String input){
-    if(input.length() != 0){
-        char *output = const_cast<char*>(input.c_str());
-        return output;
+char* string2char(String command){
+    if(command.length()!=0){
+        char *p = const_cast<char*>(command.c_str());
+        return p;
     }
 }
 
 void resetConnection() {
 
   WifiCredentials creds;
-  creds = flash_store.read();
+  creds = my_flash_store.read();
 
-  if (creds.valid) {
+  if (creds.valid || !triedDefaultCreds) {
     connectWifi();
+
   }
 
-  while (wifiStatus == WL_CONNECT_FAILED || wifiStatus == WL_IDLE_STATUS) {
+  while (status == WL_CONNECT_FAILED || status == WL_IDLE_STATUS || status == WL_NO_SSID_AVAIL) {
     // enable bluetooth and wait to try again
     enableBLE();
     connectWifi();
   }
 
   Serial.println("WiFi Connected");
+}
+
+WifiCredentials defaultCreds () {
+  WifiCredentials creds;
+  // use these to cut down on flash writes during development
+  strcpy(creds.ssid, "DEFAULT SSID");
+  strcpy(creds.pass, "DEFAULT PASSWORD");
+  creds.valid = true;
+  return creds;
 }
