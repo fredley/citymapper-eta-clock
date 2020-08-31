@@ -1,0 +1,29 @@
+{
+    "categories": [
+      {
+        "id": "81af6fe4-c2fd-4ba3-9eef-6d1bcee63bab",
+        "name": "Shortcuts",
+        "shortcuts": [
+          {
+            "iconName": "flat_color_lightbulb",
+            "id": "a388fdd8-5c25-47d0-96b8-9d361a9db026",
+            "name": "eta",
+            "responseHandling": {
+              "id": "a23178e2-f64b-4df6-89ad-6f18d978fc61"
+            },
+            "url": "https://YOUR-API-URL.execute-api.eu-west-1.amazonaws.com/eta?content\u003d{{1ca4abee-e2c5-4077-84b0-c86ffa00a59e}}"
+          }
+        ]
+      }
+    ],
+    "variables": [
+      {
+        "flags": 1,
+        "id": "1ca4abee-e2c5-4077-84b0-c86ffa00a59e",
+        "jsonEncode": true,
+        "key": "content",
+        "type": "text"
+      }
+    ],
+    "version": 40
+  }
